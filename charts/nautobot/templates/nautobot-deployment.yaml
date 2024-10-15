@@ -271,20 +271,26 @@ spec:
           {{- if $nautobot.resources }}
           resources: {{- toYaml $nautobot.resources | nindent 12 }}
           {{- end }}
-          {{- if and $nautobot.livenessProbe.enabled (or (hasKey $nautobot.livenessProbe "httpGet") (hasKey $nautobot.livenessProbe "tcpSocket")) }}
+          {{- if $nautobot.livenessProbe.enabled }}
+          {{- if or (hasKey $nautobot.livenessProbe "httpGet") (hasKey $nautobot.livenessProbe "tcpSocket") }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit $nautobot.livenessProbe "enabled" "exec") "context" $) | nindent 12 }}
-          {{- else if $nautobot.livenessProbe.enabled }}
+          {{- else }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit $nautobot.livenessProbe "enabled") "context" $) | nindent 12 }}
           {{- end }}
-          {{- if and $nautobot.readinessProbe.enabled (or (hasKey $nautobot.readinessProbe "exec") (hasKey $nautobot.readinessProbe "tcpSocket")) }}
+          {{- end }}
+          {{- if $nautobot.readinessProbe.enabled }}
+          {{- if or (hasKey $nautobot.readinessProbe "exec") (hasKey $nautobot.readinessProbe "tcpSocket") }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit $nautobot.readinessProbe "enabled" "httpGet") "context" $) | nindent 12 }}
-          {{- else if $nautobot.readinessProbe.enabled }}
+          {{- else }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit $nautobot.readinessProbe "enabled") "context" $) | nindent 12 }}
           {{- end }}
-          {{- if and $nautobot.startupProbe "exec"  (or (hasKey $nautobot.startupProbe "exec") (hasKey $nautobot.startupProbe "tcpSocket")) }}
+          {{- end }}
+          {{- if $nautobot.startupProbe.enabled }}
+          {{- if or (hasKey $nautobot.startupProbe "exec") (hasKey $nautobot.startupProbe "tcpSocket") }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit $nautobot.startupProbe "enabled" "httpGet") "context" $) | nindent 12 }}
-          {{- else if $nautobot.startupProbe.enabled }}
+          {{- else }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit $nautobot.startupProbe "enabled") "context" $) | nindent 12 }}
+          {{- end }}
           {{- end }}
           volumeMounts:
             - name: "nautobot-static"
